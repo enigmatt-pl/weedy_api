@@ -1,4 +1,4 @@
-\restrict zYOFD43cpvgxt3squIHYk47who3rhAGUW0YTYCuCO1numpJRtlT4CZHSpNT1k0n
+\restrict 9Oo4exgnUki1PJMdSmVxbxfM8BXzfHWkXV9JQ8YvDsbOinTxMu7gjcgIsvNCl41
 
 -- Dumped from database version 14.22 (Homebrew)
 -- Dumped by pg_dump version 14.22 (Homebrew)
@@ -144,7 +144,16 @@ CREATE TABLE public.dispensaries (
     category_id character varying,
     reasoning text,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    city character varying,
+    categories text[] DEFAULT '{}'::text[],
+    latitude numeric(10,6),
+    longitude numeric(10,6),
+    phone character varying,
+    email character varying,
+    website character varying,
+    hours text,
+    rating numeric(3,2) DEFAULT 0.0
 );
 
 
@@ -369,6 +378,20 @@ CREATE UNIQUE INDEX index_allegro_integrations_on_user_id ON public.allegro_inte
 
 
 --
+-- Name: index_dispensaries_on_categories; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dispensaries_on_categories ON public.dispensaries USING gin (categories);
+
+
+--
+-- Name: index_dispensaries_on_city; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dispensaries_on_city ON public.dispensaries USING btree (city);
+
+
+--
 -- Name: index_dispensaries_on_created_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -453,11 +476,12 @@ ALTER TABLE ONLY public.allegro_integrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict zYOFD43cpvgxt3squIHYk47who3rhAGUW0YTYCuCO1numpJRtlT4CZHSpNT1k0n
+\unrestrict 9Oo4exgnUki1PJMdSmVxbxfM8BXzfHWkXV9JQ8YvDsbOinTxMu7gjcgIsvNCl41
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260422155512'),
 ('20260422142905'),
 ('20260326121502'),
 ('20260326115531'),

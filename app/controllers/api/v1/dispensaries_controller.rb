@@ -89,8 +89,23 @@ module Api
       end
 
       def dispensary_params
-        params.require(:dispensary).permit(:title, :description, :estimated_price, :status, :query_data, :verification_id,
-                                           :external_product_id, :category_id, :reasoning, images: [], image_urls: [])
+        params.require(:dispensary).permit(
+          :title, 
+          :description, 
+          :query_data, 
+          :city, 
+          :latitude, 
+          :longitude,
+          :phone, 
+          :email, 
+          :website, 
+          :hours, 
+          :rating, 
+          :verification_id,
+          :status,
+          images: [], 
+          categories: []
+        )
       end
 
       def attach_images(dispensary, images)
