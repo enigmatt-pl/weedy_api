@@ -18,9 +18,6 @@ module Api
                 first_name: resource.first_name,
                 last_name: resource.last_name,
                 avatar_url: resource.avatar_url_static,
-                allegro_configured: resource.allegro_configured?,
-                is_allegro_connected: resource.allegro_connected?,
-                olx_configured: resource.olx_configured?,
                 city: resource.city,
                 postcode: resource.postcode,
                 province: resource.province
@@ -41,9 +38,6 @@ module Api
                 first_name: @user.first_name,
                 last_name: @user.last_name,
                 avatar_url: @user.avatar_url_static,
-                allegro_configured: @user.allegro_configured?,
-                is_allegro_connected: @user.allegro_connected?,
-                olx_configured: @user.olx_configured?,
                 city: @user.city,
                 postcode: @user.postcode,
                 province: @user.province
@@ -74,9 +68,6 @@ module Api
                   first_name: @user.first_name,
                   last_name: @user.last_name,
                   avatar_url: url,
-                  allegro_configured: @user.allegro_configured?,
-                  is_allegro_connected: @user.allegro_connected?,
-                  olx_configured: @user.olx_configured?,
                   city: @user.city,
                   postcode: @user.postcode,
                   province: @user.province
@@ -103,7 +94,7 @@ module Api
 
         def account_update_params
           params.require(:user).permit(
-            :first_name, :last_name, :olx_token, :city, :postcode, :province
+            :first_name, :last_name, :city, :postcode, :province
           )
         end
       end

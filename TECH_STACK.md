@@ -19,13 +19,6 @@ This document outlines the current technical stack and key architectural decisio
 - **Proxy Serving**: All media is proxied via Rails to ensure URL stability and bypass CORS/Expiration issues.
 - **Image Processing**: Using `image_processing` gem for visual standardizations.
 
-## 🤖 AI & External Integrations
-- **Google Gemini 2.0 Pro/Flash**: Used for:
-  - Computer Vision (Analyzing dispensary images and interiors).
-  - Web-Grounded Analysis (Real-time data verification).
-  - Professional Copywriting (Verified descriptions and SEO titles).
-  - Mega-Prompt Architecture: Consolidated reasoning, analysis, and generation in a single high-fidelity pass.
-
 ## ⚙️ Background Processing
 - **Sidekiq**: Asynchronous task execution.
 - **Sidekiq Workers**: Using `Sidekiq::Worker` instead of ActiveJob for better performance and direct control.
@@ -36,11 +29,10 @@ This document outlines the current technical stack and key architectural decisio
 - **FactoryBot**: For concise and reusable test data generation.
 - **RuboCop**: Enforces idiomatic Ruby/Rails style guides.
 - **Bundler Audit**: Scans dependencies for known vulnerabilities.
-- **WebMock**: Ensures no real network calls are made during tests.
-- **Annotate**: Automatically documents model schemas, serializers, and routes as comments in source files for better developer visibility.
+- **Annotate**: Automatically documents model schemas, serializers, and routes as comments in source files.
 - **bin/verify**: A unified executable for running the full QA pipeline.
 
 ## 📄 Architectural Patterns
-- **Service Objects**: Complex business logic (Dispensary profiling, AI parsing) is encapsulated in dedicated service classes (`app/services`).
-- **UUID v7 Primary Keys**: All records use sortable UUIDs, removing the need for `id` vs `created_at` sorting hacks in many cases.
+- **Service Objects**: Encapsulated business logic for clean controllers.
+- **UUID v7 Primary Keys**: All records use sortable UUIDs.
 - **RESTful Design**: Standardized API endpoints following `api/v1` versioning.

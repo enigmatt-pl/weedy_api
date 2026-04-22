@@ -41,7 +41,6 @@ class User < ApplicationRecord
   enum :role, { user: 0, super_admin: 1 }
 
   has_many :dispensaries, dependent: :destroy
-  has_one :allegro_integration, dependent: :destroy
 
   validates :first_name, :last_name, presence: true
   validates :credits, numericality: { greater_than_or_equal_to: 0 }
@@ -102,33 +101,6 @@ class User < ApplicationRecord
 
   def accepted_privacy=(value)
     self.accepted_privacy_at = value if value.present?
-  end
-
-  encrypts :olx_token
-
-  def allegro_configured?
-    allegro_integration.present?
-  end
-
-  def allegro_token_expired?
-    allegro_integration&.expired?
-  end
-
-  def allegro_location
-    {
-      city: city.presence || 'Warszawa',
-      postCode: format_postcode(postcode.presence || '00-001'),
-      countryCode: 'PL',
-      province: (province.presence || 'MAZOWIECKIE').to_s.upcase
-    }
-  end
-
-  def allegro_connected?
-    allegro_integration.present?
-  end
-
-  def olx_configured?
-    olx_token.present?
   end
 
   def avatar_url_static

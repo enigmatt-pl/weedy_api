@@ -1,60 +1,56 @@
 databases:
-  - name: moto-wrzutka-db
-    databaseName: moto_wrzutka_api_production
-    user: admin
-    plan: basic-256mb
-    postgresMajorVersion: 16
+  - name: weedy-db
+    databaseName: weedy_api_production
+    plan: free
 
 envVarGroups:
-  - name: moto-wrzutka-secrets
-    envVars:
+  - name: weedy-secrets
+    envs:
       - key: RAILS_MASTER_KEY
         sync: false
-      - key: GEMINI_API_KEY
-        sync: false
-      - key: CLOUDINARY_URL
-        sync: false
-      - key: RUBY_VERSION
-        value: 3.4.4
 
 services:
-  - type: redis
-    name: moto-wrzutka-redis
+  - name: weedy-redis
+    type: redis
     plan: free
     ipAllowList: []
-    maxmemoryPolicy: noeviction
 
-  - type: web
-    name: moto-wrzutka-api
+  - name: weedy-api
+    type: web
+    plan: free
     runtime: ruby
     buildCommand: "./bin/render-build.sh"
-    preDeployCommand: "bundle exec rails db:prepare"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
-      - fromGroup: moto-wrzutka-secrets
+      - key: RAILS_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 20.11.0
+      - fromGroup: weedy-secrets
       - key: DATABASE_URL
         fromDatabase:
-          name: moto-wrzutka-db
+          name: weedy-db
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: redis
-          name: moto-wrzutka-redis
+          name: weedy-redis
           property: connectionString
 
-  - type: worker
-    name: moto-wrzutka-sidekiq
+  - name: weedy-sidekiq
+    type: worker
+    plan: free
     runtime: ruby
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec sidekiq"
     envVars:
-      - fromGroup: moto-wrzutka-secrets
+      - key: RAILS_ENV
+        value: production
+      - fromGroup: weedy-secrets
       - key: DATABASE_URL
         fromDatabase:
-          name: moto-wrzutka-db
+          name: weedy-db
           property: connectionString
       - key: REDIS_URL
         fromService:
-          type: redis
-          name: moto-wrzutka-redis
+          name: weedy-redis
           property: connectionString

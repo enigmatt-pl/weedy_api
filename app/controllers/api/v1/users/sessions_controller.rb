@@ -32,13 +32,9 @@ module Api
             avatar_url: user.avatar_url_static,
             role: user.role,
             approved: user.approved,
-            allegro_configured: user.allegro_configured?,
-            is_allegro_connected: user.allegro_connected?,
-            olx_configured: user.olx_configured?,
             city: user.city,
             postcode: user.postcode,
-            province: user.province,
-            allegro_client_id: user.allegro_integration&.client_id
+            province: user.province
           }
         end
       end

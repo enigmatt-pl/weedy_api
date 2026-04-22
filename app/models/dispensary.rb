@@ -1,30 +1,30 @@
 # == Schema Information
 #
-# Table name: listings
+# Table name: dispensaries
 #
 #  id                  :uuid             not null, primary key
 #  description         :text
 #  estimated_price     :decimal(10, 2)   default(0.0), not null
 #  image_urls          :jsonb
 #  market_data         :jsonb
-#  oem_number          :string
 #  query_data          :text
 #  reasoning           :text
 #  status              :integer          default("draft"), not null
 #  title               :string           not null
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
-#  allegro_category_id :string
-#  allegro_offer_id    :string
-#  allegro_product_id  :string
+#  category_id         :string
+#  external_product_id :string
+#  platform_product_id :string
 #  user_id             :uuid             not null
+#  verification_id     :string
 #
 # Indexes
 #
-#  index_listings_on_created_at  (created_at)
-#  index_listings_on_oem_number  (oem_number)
-#  index_listings_on_status      (status)
-#  index_listings_on_user_id     (user_id)
+#  index_dispensaries_on_created_at       (created_at)
+#  index_dispensaries_on_status           (status)
+#  index_dispensaries_on_user_id          (user_id)
+#  index_dispensaries_on_verification_id  (verification_id)
 #
 # Foreign Keys
 #

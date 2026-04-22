@@ -1,4 +1,4 @@
-\restrict 9FyCGGEANeBzyuHchPypfPdFR33gcEZ1FeLekFpxBFgM9wvI4xV6zAcOUpkueQY
+\restrict zYOFD43cpvgxt3squIHYk47who3rhAGUW0YTYCuCO1numpJRtlT4CZHSpNT1k0n
 
 -- Dumped from database version 14.22 (Homebrew)
 -- Dumped by pg_dump version 14.22 (Homebrew)
@@ -453,7 +453,7 @@ ALTER TABLE ONLY public.allegro_integrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 9FyCGGEANeBzyuHchPypfPdFR33gcEZ1FeLekFpxBFgM9wvI4xV6zAcOUpkueQY
+\unrestrict zYOFD43cpvgxt3squIHYk47who3rhAGUW0YTYCuCO1numpJRtlT4CZHSpNT1k0n
 
 SET search_path TO "$user", public;
 

@@ -54,7 +54,7 @@ module Api
 
         def full_delete
           @user = User.find(params[:id])
-          @user.listings.each { |l| l.images.purge if l.respond_to?(:images) }
+          @user.dispensaries.each { |d| d.images.purge if d.respond_to?(:images) }
           @user.avatar.purge if @user.avatar.attached?
           @user.destroy!
           head :no_content

@@ -10,7 +10,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     if Rails.env.development?
       origins 'http://localhost:5173'
     else
-      origins 'https://moto-wrzutka-frontend.pages.dev', 'https://motowrzutka.pl'
+      origins 'https://weedy-frontend.pages.dev', 'https://weedy.pl'
     end
 
     resource "*",

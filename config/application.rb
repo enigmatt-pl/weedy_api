@@ -6,7 +6,7 @@ require "rails/all"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module MotoWrzutkaApi
+module WeedyApi
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.active_record.schema_format = :sql

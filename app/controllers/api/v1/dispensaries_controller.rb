@@ -22,49 +22,6 @@ module Api
         render json: @dispensary
       end
 
-      def generate
-        unless current_user.credits?
-          return render json: {
-            errors: [
-              'Brak dostępnych kredytów na Twoim koncie. ',
-              'Prosimy o kontakt z administratorem w celu doładowania.'
-            ].join
-          }, status: :forbidden
-        end
-
-        query_data = params[:query_data] || params[:verification_id]
-        images = params[:images]
-
-        if query_data.blank?
-          return render json: { error: 'Query data or Verification ID is required' }, status: :unprocessable_content
-        end
-
-        @dispensary = nil
-        ActiveRecord::Base.transaction do
-          current_user.credits -= 1
-          current_user.save!
-
-          @dispensary = current_user.dispensaries.create!(
-            title: 'Trwa generowanie...',
-            query_data: query_data,
-            verification_id: params[:verification_id],
-            status: :generating
-          )
-
-          attach_images(@dispensary, images)
-        end
-
-        ::DispensaryWorker.perform_async(@dispensary.id)
-
-        render json: {
-          id: @dispensary.id,
-          status: 'generating',
-          credits_remaining: current_user.reload.credits
-        }, status: :accepted
-      rescue StandardError => e
-        Rails.logger.error("Dispensary Generation Initiation Error: #{e.message}")
-        render json: { error: "Failed to start generation: #{e.message}" }, status: :unprocessable_content
-      end
 
       def create
         @dispensary = current_user.dispensaries.build(dispensary_params)

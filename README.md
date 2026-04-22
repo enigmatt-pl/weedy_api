@@ -1,6 +1,6 @@
 # Weedy API
 
-Weedy API is a Ruby on Rails backend service designed to automate and manage the profiling of medical and retail dispensaries. It works in tandem with the Weedy frontend application and leverages **Google Gemini 2.0** to analyze dispensary data and images to generate professional profiles, verified descriptions, and market-accurate potential ratings.
+Weedy API is a Ruby on Rails backend service designed to manage a network of medical and retail dispensaries. It works in tandem with the Weedy frontend application to provide a professional platform for shop owners to list their points of presence, manage their profiles, and publish them to a wider network.
 
 ## Requirements
 
@@ -9,7 +9,6 @@ Weedy API is a Ruby on Rails backend service designed to automate and manage the
 * **Postgres 16+** (Uses **UUID v7** with **SQL Schema format**)
 * **Redis** (for Sidekiq and caching)
 * **Cloudinary** (for persistent media storage)
-* **Gemini API** (for AI generation)
 
 ## Getting Started
 
@@ -31,10 +30,8 @@ Weedy API is a Ruby on Rails backend service designed to automate and manage the
    cp .env.example .env
    ```
    Required production/cloud variables:
-   - `GEMINI_API_KEY`: For AI generation.
    - `CLOUDINARY_URL`: For persistent image storage.
-   - `APP_HOST`: (Optional) Custom domain for media links.
-   - `RENDER_EXTERNAL_HOSTNAME`: Auto-set by Render.
+   - `ANALYTICS_USER_ID` & `ANALYTICS_SECRET_KEY`: For tracking endpoints.
 
 4. **Running the Services**
    ```bash
@@ -46,42 +43,27 @@ Weedy API is a Ruby on Rails backend service designed to automate and manage the
 Weedy implements a **Masked Storage System** via Active Storage:
 - **Proxy URLs**: All internal storage paths are hidden behind `/uploads/:signed_id/:filename`.
 - **Persistent Cloud**: Integrated with **Cloudinary** for stability across deployments.
-- **Stable Signatures**: Frontend can safely cache image URLs without expiration issues.
 
 ## Deployment
 
-The project is pre-configured for **Render** via `render.yaml`:
-- **Web Service**: Rails API.
-- **Worker Service**: Sidekiq Background Processing.
-- **Managed DB/Redis**: Centralized secret management via `envVarGroups`.
+The project is pre-configured for **Render** via `render.yaml`.
 
 ## Verification & Quality Assurance
 
-We maintain high code quality standards. Run the full verification pipeline (Tests, Linting, Security Audit) with one command:
+We maintain high code quality standards. Run the full verification pipeline with:
 
 ```bash
 ./bin/verify
 ```
 
-This script executes:
-- **Bundler Audit**: Checks for security vulnerabilities in dependencies.
-- **RuboCop**: Ensures idiomatic Ruby and Rails style guides.
-- **RSpec**: Runs the full test suite.
-
-## Dispensary Profiling API
-
-The Weedy backend supports an AI-powered dispensary profiling flow.
+## Dispensary API
 
 ### Endpoints
 - `GET /api/v1/dispensaries` - Retrieve all dispensaries for the authenticated user.
-- `POST /api/v1/dispensaries/generate` - Upload dispensary name/address and images to initiate asynchronous profiling (Sidekiq) via **Gemini 2.0**.
-- `POST /api/v1/dispensaries` - Create a new dispensary record.
+- `POST /api/v1/dispensaries` - Create a new dispensary record with images.
 - `PUT /api/v1/dispensaries/:id` - Update an existing dispensary profile.
 - `DELETE /api/v1/dispensaries/:id` - Delete a dispensary record.
 
 ### Analytics & Health
 - `POST /api/v1/health/ping` - Obfuscated endpoint for page view tracking.
 - `POST /api/v1/health/pulse` - Obfuscated endpoint for engagement tracking.
-
-### Setup
-Ensure you have configured your `.env` file with `GEMINI_API_KEY` before starting the server.

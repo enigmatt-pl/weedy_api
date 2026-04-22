@@ -47,15 +47,15 @@
 #                       api_v1_allegro_auth GET    /api/v1/allegro/auth(.:format)                                                                    api/v1/allegro_auth#auth
 #                   api_v1_allegro_callback GET    /api/v1/allegro/callback(.:format)                                                                api/v1/allegro_auth#callback
 #                   api_v1_allegro_products GET    /api/v1/allegro/products(.:format)                                                                api/v1/allegro/products#index
-#                  generate_api_v1_listings POST   /api/v1/listings/generate(.:format)                                                               api/v1/listings#generate
-#                    publish_api_v1_listing POST   /api/v1/listings/:id/publish(.:format)                                                            api/v1/listings#publish
-#                            api_v1_listing POST   /api/v1/listings/:id(.:format)                                                                    api/v1/listings#update
-#                           api_v1_listings GET    /api/v1/listings(.:format)                                                                        api/v1/listings#index
-#                                           POST   /api/v1/listings(.:format)                                                                        api/v1/listings#create
-#                                           GET    /api/v1/listings/:id(.:format)                                                                    api/v1/listings#show
-#                                           PATCH  /api/v1/listings/:id(.:format)                                                                    api/v1/listings#update
-#                                           PUT    /api/v1/listings/:id(.:format)                                                                    api/v1/listings#update
-#                                           DELETE /api/v1/listings/:id(.:format)                                                                    api/v1/listings#destroy
+#              generate_api_v1_dispensaries POST   /api/v1/dispensaries/generate(.:format)                                                           api/v1/dispensaries#generate
+#                 publish_api_v1_dispensary POST   /api/v1/dispensaries/:id/publish(.:format)                                                        api/v1/dispensaries#publish
+#                         api_v1_dispensary POST   /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
+#                       api_v1_dispensaries GET    /api/v1/dispensaries(.:format)                                                                    api/v1/dispensaries#index
+#                                           POST   /api/v1/dispensaries(.:format)                                                                    api/v1/dispensaries#create
+#                                           GET    /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#show
+#                                           PATCH  /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
+#                                           PUT    /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
+#                                           DELETE /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#destroy
 #                        api_v1_health_ping POST   /api/v1/health/ping(.:format)                                                                     api/v1/analytics#create
 #                       api_v1_health_pulse POST   /api/v1/health/pulse(.:format)                                                                    api/v1/analytics/engagements#create
 #         api_v1_admin_analytics_page_views GET    /api/v1/admin/analytics/page_views(.:format)                                                      api/v1/admin/analytics#page_views
@@ -118,25 +118,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :allegro_integration, only: [] do
-        collection do
-          get :auth_url
-          post :callback
-          get :status
-        end
-      end
-
-      get 'allegro/auth', to: 'allegro_auth#auth'
-      get 'allegro/callback', to: 'allegro_auth#callback'
-
-      namespace :allegro do
-        resources :products, only: [:index]
-      end
-
       resources :dispensaries, only: [:index, :show, :create, :update, :destroy] do
-        collection do
-          post :generate
-        end
         member do
           post :publish
           post :update # Fallback for multipart updates using POST
