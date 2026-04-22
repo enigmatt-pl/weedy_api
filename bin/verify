@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+
+# Raw ANSI codes used for color to avoid external dependencies.
+
+class Verifier
+  TICKS = {
+    progress: '◈'.freeze,
+    success: '✔'.freeze,
+    failure: '✘'.freeze,
+    warning: '⚠'.freeze,
+    info: 'ℹ'.freeze
+  }.freeze
+
+  COLORS = {
+    blue: "\e[34m".freeze,
+    green: "\e[32m".freeze,
+    red: "\e[31m".freeze,
+    yellow: "\e[33m".freeze,
+    cyan: "\e[36m".freeze,
+    bold: "\e[1m".freeze,
+    reset: "\e[0m".freeze
+  }.freeze
+
+  def run
+    puts "\n" + " #{COLORS[:bold]}#{COLORS[:cyan]}SYSTEM VERIFICATION PIPELINE#{COLORS[:reset]} ".center(74, '═') + "\n\n"
+
+    results = []
+    results << run_step('BUNDLE AUDIT', 'bundle exec bundle-audit check --update')
+    results << run_step('RUBOCOP LINTER', 'bundle exec rubocop')
+    results << run_step('RSPEC SUITE', 'bundle exec rspec')
+
+    print_summary(results)
+    exit(results.all? { |r| r[:success] } ? 0 : 1)
+  end
+
+  private
+
+  def run_step(name, command)
+    print " #{COLORS[:blue]}#{TICKS[:progress]}#{COLORS[:reset]} #{COLORS[:bold]}#{name.ljust(20)}#{COLORS[:reset]} ... "
+    
+    start_time = Time.now
+    output = `#{command} 2>&1`
+    success = $?.success?
+    duration = (Time.now - start_time).round(2)
+
+    if success
+      puts "#{COLORS[:green]}#{TICKS[:success]} PASSED#{COLORS[:reset]} (#{duration}s)"
+    else
+      puts "#{COLORS[:red]}#{TICKS[:failure]} FAILED#{COLORS[:reset]} (#{duration}s)"
+      @failed_output ||= []
+      @failed_output << { name: name, output: output }
+    end
+
+    { name: name, success: success, duration: duration }
+  end
+
+  def print_summary(results)
+    total_duration = results.map { |r| r[:duration] }.sum.round(2)
+    all_passed = results.all? { |r| r[:success] }
+
+    puts "\n" + "═" * 60
+    puts " #{COLORS[:bold]}SUMMARY#{COLORS[:reset]}"
+    results.each do |r|
+      status = r[:success] ? "#{COLORS[:green]}OK#{COLORS[:reset]}" : "#{COLORS[:red]}FAIL#{COLORS[:reset]}"
+      puts "  • #{r[:name].ljust(20)}: #{status}"
+    end
+    puts "═" * 60
+
+    if all_passed
+      puts "\n #{COLORS[:green]}#{COLORS[:bold]}🚀 ALL SYSTEMS GO!#{COLORS[:reset]} (Total: #{total_duration}s)\n\n"
+    else
+      puts "\n #{COLORS[:red]}#{COLORS[:bold]}❌ VERIFICATION FAILED!#{COLORS[:reset]} (Total: #{total_duration}s)"
+      print_failures
+      puts "\n"
+    end
+  end
+
+  def print_failures
+    return if @failed_output.nil? || @failed_output.empty?
+
+    puts "\n #{COLORS[:bold]}#{COLORS[:red]}DETAILED FAILURES:#{COLORS[:reset]}"
+    @failed_output.each do |fail|
+      puts "\n#{COLORS[:yellow]}[ #{fail[:name]} ]#{COLORS[:reset]}"
+      # Truncate output to last 20 lines for brevity but show enough context
+      lines = fail[:output].split("\n")
+      puts fail[:output]
+    end
+  end
+end
+
+Verifier.new.run

@@ -1,0 +1,60 @@
+databases:
+  - name: moto-wrzutka-db
+    databaseName: moto_wrzutka_api_production
+    user: admin
+    plan: basic-256mb
+    postgresMajorVersion: 16
+
+envVarGroups:
+  - name: moto-wrzutka-secrets
+    envVars:
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: RUBY_VERSION
+        value: 3.4.4
+
+services:
+  - type: redis
+    name: moto-wrzutka-redis
+    plan: free
+    ipAllowList: []
+    maxmemoryPolicy: noeviction
+
+  - type: web
+    name: moto-wrzutka-api
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    preDeployCommand: "bundle exec rails db:prepare"
+    startCommand: "bundle exec puma -C config/puma.rb"
+    envVars:
+      - fromGroup: moto-wrzutka-secrets
+      - key: DATABASE_URL
+        fromDatabase:
+          name: moto-wrzutka-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: moto-wrzutka-redis
+          property: connectionString
+
+  - type: worker
+    name: moto-wrzutka-sidekiq
+    runtime: ruby
+    buildCommand: "./bin/render-build.sh"
+    startCommand: "bundle exec sidekiq"
+    envVars:
+      - fromGroup: moto-wrzutka-secrets
+      - key: DATABASE_URL
+        fromDatabase:
+          name: moto-wrzutka-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: moto-wrzutka-redis
+          property: connectionString

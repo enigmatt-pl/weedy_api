@@ -1,0 +1,6 @@
+pl:
+  devise:
+    failure:
+      not_approved: "Administrator został powiadomiony i skontaktuje się z Tobą najszybciej jak to możliwe."
+      terms_not_accepted: "Musisz zaakceptować regulamin, aby się zalogować."
+      privacy_not_accepted: "Musisz zaakceptować politykę prywatności, aby się zalogować."

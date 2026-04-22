@@ -1,0 +1,116 @@
+plugins:
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-performance
+  - rubocop-factory_bot
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'db/**/*'
+    - 'config/**/*'
+    - 'bin/**/*'
+    - 'public/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'storage/**/*'
+
+# Relaxing common API mode constraints
+Style/Documentation:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/OneClassPerFile:
+  Exclude:
+    - 'app/services/allegro_service.rb'
+
+Layout/LineLength:
+  Max: 120
+  Exclude:
+    - 'spec/**/*'
+
+Metrics/MethodLength:
+  Max: 40
+  Exclude:
+    - 'app/services/**/*'
+
+Metrics/ClassLength:
+  Max: 150
+  Exclude:
+    - 'app/services/**/*'
+
+Metrics/BlockLength:
+  Max: 25
+  Exclude:
+    - 'spec/**/*'
+    - 'lib/tasks/**/*'
+    - 'config/**/*'
+
+Metrics/AbcSize:
+  Max: 40
+
+Metrics/PerceivedComplexity:
+  Max: 8
+  Exclude:
+    - 'app/clients/gemini_mega_prompt_client.rb'
+
+Metrics/CyclomaticComplexity:
+  Max: 7
+  Exclude:
+    - 'app/models/concerns/storage_maskable.rb'
+    - 'app/clients/gemini_mega_prompt_client.rb'
+
+# Rails specific
+Rails:
+  Enabled: true
+
+Rails/SkipsModelValidations:
+  Exclude:
+    - 'spec/**/*'
+
+Rails/UnknownEnv:
+  Environments:
+    - development
+    - test
+    - staging
+    - production
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+# RSpec specific
+RSpec/MultipleExpectations:
+  Max: 10
+
+RSpec/ExampleLength:
+  Max: 20
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/MessageSpies:
+  EnforcedStyle: receive
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/AnyInstance:
+  Enabled: false
+
+RSpec/LetSetup:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  Enabled: false
+
+# FactoryBot specific
+FactoryBot/ExcessiveCreateList:
+  MaxAmount: 20

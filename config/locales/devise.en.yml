@@ -1,0 +1,6 @@
+en:
+  devise:
+    failure:
+      not_approved: "Your account has not been approved by the administrator yet."
+      terms_not_accepted: "You must accept the terms and conditions to log in."
+      privacy_not_accepted: "You must accept the privacy policy to log in."
