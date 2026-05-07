@@ -1,15 +1,22 @@
 module Api
   module V1
     class DispensariesController < ApplicationController
-      before_action :authenticate_user!
-      before_action :set_dispensary, only: [:show, :update, :destroy, :publish]
+      before_action :authenticate_user!, except: [:index, :show]
+      before_action :set_dispensary, only: [:show]
+      before_action :set_owned_dispensary, only: [:update, :destroy, :publish]
 
       def index
-        @dispensaries = if current_user.super_admin? && params[:user_id].present?
+        @dispensaries = if params[:all] || params[:q].present? || current_user.nil?
+                          Dispensary.published.or(Dispensary.active)
+                        elsif current_user.super_admin? && params[:user_id].present?
                           Dispensary.where(user_id: params[:user_id])
                         else
                           current_user.dispensaries
                         end
+
+        if params[:q].present?
+          @dispensaries = @dispensaries.where('title ILIKE ? OR city ILIKE ? OR categories::text ILIKE ?', "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%")
+        end
         @dispensaries = @dispensaries.with_attached_images
                                      .includes(:user)
                                      .order(created_at: :desc)
@@ -79,6 +86,17 @@ module Api
       end
 
       def set_dispensary
+        @dispensary = Dispensary.find(params[:id])
+        
+        # If not owner or admin, only show if published/active
+        unless (current_user && (@dispensary.user_id == current_user.id || current_user.super_admin?)) || @dispensary.published? || @dispensary.active?
+          render json: { error: 'Dispensary not found' }, status: :not_found
+        end
+      rescue ActiveRecord::RecordNotFound
+        render json: { error: 'Dispensary not found' }, status: :not_found
+      end
+
+      def set_owned_dispensary
         @dispensary = if current_user.super_admin?
                         Dispensary.find(params[:id])
                       else

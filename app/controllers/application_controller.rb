@@ -11,19 +11,24 @@ class ApplicationController < ActionController::API
     }
   end
 
+  def current_user
+    @current_user ||= authenticate_from_token
+  end
+
   def authenticate_user!
-    token = request.headers['Authorization']&.split&.last
-
-    return render json: { error: 'Unauthorized' }, status: :unauthorized unless token
-
-    decoded = JwtService.decode(token)
-    return render json: { error: 'Unauthorized' }, status: :unauthorized unless decoded
-
-    @current_user = User.find_by(id: decoded[:user_id])
-
-    return if @current_user
+    return if current_user
 
     render json: { error: 'Unauthorized' }, status: :unauthorized
+  end
+
+  def authenticate_from_token
+    token = request.headers['Authorization']&.split&.last
+    return nil unless token
+
+    decoded = JwtService.decode(token)
+    return nil unless decoded
+
+    User.find_by(id: decoded[:user_id])
   end
 
   def authenticate_super_admin!
@@ -32,6 +37,4 @@ class ApplicationController < ActionController::API
 
     render json: { error: 'Forbidden' }, status: :forbidden
   end
-
-  attr_reader :current_user
 end
