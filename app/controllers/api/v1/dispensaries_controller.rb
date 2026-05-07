@@ -1,22 +1,19 @@
 module Api
   module V1
     class DispensariesController < ApplicationController
-      before_action :authenticate_user!, except: [:index, :show]
+      before_action :authenticate_user!, except: [:show]
       before_action :set_dispensary, only: [:show]
       before_action :set_owned_dispensary, only: [:update, :destroy, :publish]
 
+      # Admin panel: returns the current user's own dispensaries.
+      # Public search is handled by SearchesController.
       def index
-        @dispensaries = if params[:all] || params[:q].present? || current_user.nil?
-                          Dispensary.published.or(Dispensary.active)
-                        elsif current_user.super_admin? && params[:user_id].present?
+        @dispensaries = if current_user.super_admin? && params[:user_id].present?
                           Dispensary.where(user_id: params[:user_id])
                         else
                           current_user.dispensaries
                         end
 
-        if params[:q].present?
-          @dispensaries = @dispensaries.where('title ILIKE ? OR city ILIKE ? OR categories::text ILIKE ?', "%#{params[:q]}%", "%#{params[:q]}%", "%#{params[:q]}%")
-        end
         @dispensaries = @dispensaries.with_attached_images
                                      .includes(:user)
                                      .order(created_at: :desc)
@@ -24,6 +21,7 @@ module Api
                                      .per(params[:per_page] || 10)
         render json: @dispensaries, meta: pagination_meta(@dispensaries)
       end
+
 
       def show
         render json: @dispensary

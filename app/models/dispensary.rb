@@ -50,6 +50,8 @@ class Dispensary < ApplicationRecord
 
   enum :status, { draft: 0, published: 1, generating: 2, failed: 3, active: 4, archived: 6 }, default: :draft
 
+  scope :publicly_visible, -> { where(status: [statuses[:published], statuses[:active]]) }
+
   validates :title, presence: true, unless: -> { generating? || failed? }
   validates :estimated_price, numericality: { greater_than_or_equal_to: 0 }
   validates :description, presence: true, unless: -> { generating? || failed? }

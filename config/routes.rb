@@ -118,6 +118,8 @@ Rails.application.routes.draw do
         end
       end
 
+      resources :searches, only: [:create, :show]
+
       namespace :health do
         post 'ping', to: '/api/v1/analytics#create'
         post 'pulse', to: '/api/v1/analytics/engagements#create'
