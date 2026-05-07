@@ -18,7 +18,7 @@ module Api
           category: builder.category,
           order: builder.order,
           filters: extra_filters,
-          results_count: payload[:meta][:total_count],
+          results_count: payload[:meta][:total_count].to_i || 0,
           ip_address: request.remote_ip,
           user_agent: request.user_agent,
           user: current_user
