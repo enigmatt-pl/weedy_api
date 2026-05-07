@@ -9,7 +9,7 @@ module Api
       # POST /api/v1/searches
       # Creates a persistent search record and returns its UUID + results.
       def create
-        builder = ::Search::ResultsBuilder.new(params: search_params, user: current_user)
+        builder = SearchResultsBuilder.new(params: search_params, user: current_user)
         payload = builder.fetch
 
         search = ::Search.create!(
@@ -33,7 +33,7 @@ module Api
       def show
         search = ::Search.find(params[:id])
 
-        builder = ::Search::ResultsBuilder.new(
+        builder = SearchResultsBuilder.new(
           params: {
             'q'        => search.query,
             'city'     => search.city,

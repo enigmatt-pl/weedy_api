@@ -49,6 +49,8 @@
 #                                          PATCH  /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
 #                                          PUT    /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
 #                                          DELETE /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#destroy
+#                          api_v1_searches POST   /api/v1/searches(.:format)                                                                        api/v1/searches#create
+#                            api_v1_search GET    /api/v1/searches/:id(.:format)                                                                    api/v1/searches#show
 #                       api_v1_health_ping POST   /api/v1/health/ping(.:format)                                                                     api/v1/analytics#create
 #                      api_v1_health_pulse POST   /api/v1/health/pulse(.:format)                                                                    api/v1/analytics/engagements#create
 #        api_v1_admin_analytics_page_views GET    /api/v1/admin/analytics/page_views(.:format)                                                      api/v1/admin/analytics#page_views

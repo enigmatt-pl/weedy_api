@@ -1,4 +1,4 @@
-\restrict 1mFP1IFD1bUU2G1JwcQ4KybuYyQlvmsQU2hd7M8f4BkhNoaaD97PSkC1jSHhWiQ
+\restrict w2T0I1cWg8dNM3EVqZazBatMeC2E7BxzH3qwDGPae3enuoRsh4pXS13WBT1bqfW
 
 -- Dumped from database version 14.22 (Homebrew)
 -- Dumped by pg_dump version 14.22 (Homebrew)
@@ -242,6 +242,26 @@ CREATE TABLE public.schema_migrations (
 
 
 --
+-- Name: searches; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.searches (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    query character varying,
+    city character varying,
+    category character varying,
+    "order" character varying DEFAULT 'relevance'::character varying,
+    filters jsonb DEFAULT '{}'::jsonb,
+    results_count integer DEFAULT 0,
+    ip_address character varying,
+    user_agent character varying,
+    user_id uuid,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -332,6 +352,14 @@ ALTER TABLE ONLY public.page_views
 
 ALTER TABLE ONLY public.schema_migrations
     ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
+
+
+--
+-- Name: searches searches_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.searches
+    ADD CONSTRAINT searches_pkey PRIMARY KEY (id);
 
 
 --
@@ -427,6 +455,34 @@ CREATE INDEX index_page_views_on_ip_address ON public.page_views USING btree (ip
 
 
 --
+-- Name: index_searches_on_city; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_searches_on_city ON public.searches USING btree (city);
+
+
+--
+-- Name: index_searches_on_created_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_searches_on_created_at ON public.searches USING btree (created_at);
+
+
+--
+-- Name: index_searches_on_query; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_searches_on_query ON public.searches USING btree (query);
+
+
+--
+-- Name: index_searches_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_searches_on_user_id ON public.searches USING btree (user_id);
+
+
+--
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -465,6 +521,14 @@ ALTER TABLE ONLY public.active_storage_attachments
 
 
 --
+-- Name: searches fk_rails_e192b86393; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.searches
+    ADD CONSTRAINT fk_rails_e192b86393 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: allegro_integrations fk_rails_f89f02443d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -476,11 +540,12 @@ ALTER TABLE ONLY public.allegro_integrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 1mFP1IFD1bUU2G1JwcQ4KybuYyQlvmsQU2hd7M8f4BkhNoaaD97PSkC1jSHhWiQ
+\unrestrict w2T0I1cWg8dNM3EVqZazBatMeC2E7BxzH3qwDGPae3enuoRsh4pXS13WBT1bqfW
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260507121000'),
 ('20260422155512'),
 ('20260422142905'),
 ('20260326121502'),
