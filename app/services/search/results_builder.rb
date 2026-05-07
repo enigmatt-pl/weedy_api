@@ -59,7 +59,12 @@ module Search
     def apply_category_filter
       return if category.blank?
 
-      @scope = scope.where('categories::text ILIKE ?', "%#{category}%")
+      # Use unnest for case-insensitive exact element match (avoids false positives
+      # from casting the whole array to text, e.g. 'cbd' matching 'cbdoil').
+      @scope = scope.where(
+        'EXISTS (SELECT 1 FROM unnest(categories) AS c(v) WHERE lower(c.v) = lower(?))',
+        category
+      )
     end
 
     def apply_ordering
@@ -101,6 +106,7 @@ module Search
       scope.map do |dispensary|
         {
           id: dispensary.id,
+          user_id: dispensary.user_id,
           title: dispensary.title,
           description: dispensary.description,
           city: dispensary.city,
@@ -112,6 +118,7 @@ module Search
           email: dispensary.email,
           website: dispensary.website,
           hours: dispensary.hours,
+          query_data: dispensary.query_data,
           image_urls: dispensary.image_urls,
           status: dispensary.status
         }
