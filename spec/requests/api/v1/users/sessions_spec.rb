@@ -22,9 +22,6 @@ RSpec.describe 'Api::V1::Users::Sessions', type: :request do
         expect(json_response['user']['first_name']).to eq('Jane')
         expect(json_response['user']['last_name']).to eq('Smith')
         expect(json_response['user']).to have_key('avatar_url')
-        expect(json_response['user']['allegro_configured']).to be(false)
-        expect(json_response['user']['is_allegro_connected']).to be(false)
-        expect(json_response['user']['olx_configured']).to be(false)
       end
     end
 

@@ -74,7 +74,7 @@
 #
 #  index_page_views_on_ip_address  (ip_address)
 #
-require "test_helper"
+require 'test_helper'
 
 class PageViewTest < ActiveSupport::TestCase
   # test "the truth" do

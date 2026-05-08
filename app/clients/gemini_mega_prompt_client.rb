@@ -36,7 +36,7 @@ class GeminiMegaPromptClient
     end
 
     output_text = parse_response(response.body)
-    
+
     # Quiet the production logs to avoid bloat, but preserve full visibility in development.
     if Rails.env.development? || ENV['DEBUG_AI'] == 'true'
       Rails.logger.info("Gemini Output [#{response.status}]: #{output_text}")

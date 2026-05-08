@@ -22,11 +22,9 @@ module Api
         render json: @dispensaries, meta: pagination_meta(@dispensaries)
       end
 
-
       def show
         render json: @dispensary
       end
-
 
       def create
         @dispensary = current_user.dispensaries.build(dispensary_params)
@@ -60,9 +58,9 @@ module Api
 
       def publish
         if @dispensary.published!
-          render json: { 
-            message: 'Punkt został opublikowany pomyślnie!', 
-            status: @dispensary.status 
+          render json: {
+            message: 'Punkt został opublikowany pomyślnie!',
+            status: @dispensary.status
           }, status: :ok
         else
           render json: { error: 'Nie udało się opublikować punktu' }, status: :unprocessable_content
@@ -71,9 +69,9 @@ module Api
 
       def unpublish
         if @dispensary.draft!
-          render json: { 
-            message: 'Publikacja została cofnięta.', 
-            status: @dispensary.status 
+          render json: {
+            message: 'Publikacja została cofnięta.',
+            status: @dispensary.status
           }, status: :ok
         else
           render json: { error: 'Nie udało się cofnąć publikacji' }, status: :unprocessable_content
@@ -99,7 +97,7 @@ module Api
 
       def set_dispensary
         @dispensary = Dispensary.find(params[:id])
-        
+
         # If not owner or admin, only show if published/active
         unless (current_user && (@dispensary.user_id == current_user.id || current_user.super_admin?)) || @dispensary.published? || @dispensary.active?
           render json: { error: 'Dispensary not found' }, status: :not_found
@@ -120,20 +118,21 @@ module Api
 
       def dispensary_params
         params.require(:dispensary).permit(
-          :title, 
-          :description, 
-          :query_data, 
-          :city, 
-          :latitude, 
+          :title,
+          :description,
+          :estimated_price,
+          :query_data,
+          :city,
+          :latitude,
           :longitude,
-          :phone, 
-          :email, 
-          :website, 
-          :hours, 
-          :rating, 
+          :phone,
+          :email,
+          :website,
+          :hours,
+          :rating,
           :verification_id,
           :status,
-          images: [], 
+          images: [],
           categories: []
         )
       end
@@ -146,11 +145,7 @@ module Api
             checksum = Digest::MD5.file(image.tempfile.path).base64digest
             existing_blob = ActiveStorage::Blob.find_by(checksum: checksum)
 
-            if existing_blob
-              dispensary.images.attach(existing_blob)
-            else
-              dispensary.images.attach(image)
-            end
+            dispensary.images.attach(existing_blob || image)
           end
         rescue StandardError => e
           Rails.logger.error("DispensariesController: Attachment failed: #{e.message}")

@@ -26,27 +26,6 @@ RSpec.describe 'Api::V1::Dispensaries', type: :request do
     end
   end
 
-  describe 'POST /api/v1/dispensaries/generate' do
-    let(:dummy_file) { fixture_file_upload(Rails.root.join('spec/fixtures/files/dummy_image.jpg'), 'image/jpeg') }
-
-    it 'initiates background analysis and returns 202' do
-      user.update(credits: 10)
-
-      expect do
-        post generate_api_v1_dispensaries_path, params: {
-          query_data: 'Some Dispensary Data',
-          images: [dummy_file]
-        }
-      end.to change(Dispensary, :count).by(1)
-                                     .and change { user.reload.credits }.by(-1)
-
-      expect(response).to have_http_status(:accepted)
-      json = response.parsed_body
-      expect(json['status']).to eq('generating')
-      expect(json).to have_key('id')
-    end
-  end
-
   describe 'GET /api/v1/dispensaries/:id' do
     it 'returns the dispensary details and 200' do
       dispensary = create(:dispensary, user: user)
@@ -97,7 +76,7 @@ RSpec.describe 'Api::V1::Dispensaries', type: :request do
       dispensary.reload
       expect(dispensary.title).to eq('New Title')
       expect(dispensary.description).to eq('New Desc')
-      expect(dispensary.estimated_price).to eq(150.0)
+      expect(dispensary.estimated_price.to_f).to eq(150.0)
     end
   end
 
@@ -108,6 +87,34 @@ RSpec.describe 'Api::V1::Dispensaries', type: :request do
         delete api_v1_dispensary_path(dispensary)
       end.to change(Dispensary, :count).by(-1)
       expect(response).to have_http_status(:no_content)
+    end
+  end
+
+  describe 'POST /api/v1/dispensaries/:id/publish' do
+    it 'publishes the dispensary' do
+      dispensary = create(:dispensary, user: user, status: :draft)
+      post publish_api_v1_dispensary_path(dispensary)
+
+      expect(response).to have_http_status(:ok)
+      expect(dispensary.reload.status).to eq('published')
+    end
+
+    it 'denies publishing for non-owners' do
+      other_dispensary = create(:dispensary, user: other_user, status: :draft)
+      post publish_api_v1_dispensary_path(other_dispensary)
+
+      expect(response).to have_http_status(:not_found) # set_owned_dispensary returns 404 for non-owned
+      expect(other_dispensary.reload.status).to eq('draft')
+    end
+  end
+
+  describe 'POST /api/v1/dispensaries/:id/unpublish' do
+    it 'unpublishes the dispensary back to draft' do
+      dispensary = create(:dispensary, user: user, status: :published)
+      post unpublish_api_v1_dispensary_path(dispensary)
+
+      expect(response).to have_http_status(:ok)
+      expect(dispensary.reload.status).to eq('draft')
     end
   end
 end

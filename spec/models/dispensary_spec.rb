@@ -79,7 +79,7 @@ RSpec.describe Dispensary, type: :model do
   describe 'enums' do
     it {
       expect(subject).to define_enum_for(:status)
-        .with_values(draft: 0, published: 1, generating: 2, failed: 3, active: 4, sold: 5, archived: 6)
+        .with_values(draft: 0, published: 1, generating: 2, failed: 3, active: 4, archived: 6)
     }
   end
 

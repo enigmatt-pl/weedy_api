@@ -135,6 +135,6 @@ class SearchResultsBuilder
   end
 
   def sanitize_params(raw_params)
-    raw_params.select { |k, _v| PERMITTED_PARAMS.include?(k.to_s) }
+    raw_params.to_h.with_indifferent_access.select { |k, _v| PERMITTED_PARAMS.include?(k.to_s) }
   end
 end

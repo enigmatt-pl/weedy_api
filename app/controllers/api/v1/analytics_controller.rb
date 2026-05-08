@@ -4,7 +4,7 @@ module Api
   module V1
     class AnalyticsController < ActionController::API
       include ActionController::HttpAuthentication::Basic::ControllerMethods
-      
+
       before_action :authenticate_analytics!
 
       def create
@@ -16,11 +16,11 @@ module Api
           raw_payload = params[:pd].to_s.reverse
           decoded = Base64.decode64(raw_payload)
           parsed_data = JSON.parse(decoded)
-        rescue => e
+        rescue StandardError => e
           Rails.logger.warn "Failed to parse fuzzed payload: #{e.message}"
           return head :bad_request
         end
-        
+
         # Permit all keys from the parsed hash for our attributes
         permitted_data = ActionController::Parameters.new(parsed_data).permit(
           :visitor_id, :path, :referrer, :user_agent, :browser_name, :browser_version,
@@ -47,7 +47,7 @@ module Api
           )
         )
         head :created
-      rescue => e
+      rescue StandardError => e
         Rails.logger.error "Analytics Error: #{e.message}"
         head :ok # Don't break the frontend if DB fails
       end
@@ -57,16 +57,18 @@ module Api
       def authenticate_analytics!
         # Handle both standard Basic Auth and the ?_auth URL param for sendBeacon
         auth_token = params[:_auth]
-        
+
         if auth_token.present?
           begin
-            decoded_auth = Base64.decode64(auth_token) rescue ""
-            username, password = decoded_auth.split(':', 2)
-            
-            unless username == ENV['ANALYTICS_USER_ID'] && password == ENV['ANALYTICS_SECRET_KEY']
-              head :unauthorized
+            decoded_auth = begin
+              Base64.decode64(auth_token)
+            rescue StandardError
+              ''
             end
-          rescue
+            username, password = decoded_auth.split(':', 2)
+
+            head :unauthorized unless username == ENV['ANALYTICS_USER_ID'] && password == ENV['ANALYTICS_SECRET_KEY']
+          rescue StandardError
             head :unauthorized
           end
         else

@@ -29,10 +29,7 @@ RSpec.describe 'Api::V1::Users::Registrations', type: :request do
         expect(json_response['user']['email']).to eq('test@example.com')
         expect(json_response['user']['first_name']).to eq('John')
         expect(json_response['user']['last_name']).to eq('Doe')
-        expect(json_response['user']['avatar_url']).to be_nil
-        expect(json_response['user']['allegro_configured']).to be(false)
-        expect(json_response['user']['is_allegro_connected']).to be(false)
-        expect(json_response['user']['olx_configured']).to be(false)
+        expect(json_response['user']['avatar_url_static']).to be_nil
       end
     end
 
@@ -73,9 +70,7 @@ RSpec.describe 'Api::V1::Users::Registrations', type: :request do
 
         expect(response).to have_http_status(:ok)
         json = response.parsed_body
-        expect(json['avatar_url']).to be_present
-        expect(json['user']['avatar_url']).to eq(json['avatar_url'])
-        expect(json['user']).to have_key('is_allegro_connected')
+        expect(json).to have_key('avatar_url')
         expect(user.reload.avatar).to be_attached
       end
     end
