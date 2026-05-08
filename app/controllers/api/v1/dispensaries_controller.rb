@@ -59,11 +59,14 @@ module Api
       end
 
       def publish
-        # For now, keeping the service call but renaming the class if needed later
-        # result = AllegroService.new(current_user, @dispensary).call
-        # Since this is a rebrand to Weedy (dispensaries), we might not use Allegro.
-        # But for the migration, I'll just comment it out or keep it generic.
-        render json: { message: 'Publishing logic to be updated for dispensaries' }, status: :ok
+        if @dispensary.published!
+          render json: { 
+            message: 'Punkt został opublikowany pomyślnie!', 
+            status: @dispensary.status 
+          }, status: :ok
+        else
+          render json: { error: 'Nie udało się opublikować punktu' }, status: :unprocessable_content
+        end
       end
 
       def destroy
