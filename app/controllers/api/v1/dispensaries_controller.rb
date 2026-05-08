@@ -99,9 +99,9 @@ module Api
         @dispensary = Dispensary.find(params[:id])
 
         # If not owner or admin, only show if published/active
-        unless (current_user && (@dispensary.user_id == current_user.id || current_user.super_admin?)) || @dispensary.published? || @dispensary.active?
-          render json: { error: 'Dispensary not found' }, status: :not_found
-        end
+        is_owner_or_admin = current_user && (@dispensary.user_id == current_user.id || current_user.super_admin?)
+        is_visible = @dispensary.published? || @dispensary.active?
+        render json: { error: 'Dispensary not found' }, status: :not_found unless is_owner_or_admin || is_visible
       rescue ActiveRecord::RecordNotFound
         render json: { error: 'Dispensary not found' }, status: :not_found
       end

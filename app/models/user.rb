@@ -113,11 +113,11 @@ class User < ApplicationRecord
 
   private
 
-  def format_postcode(pc)
-    pc = pc.to_s.gsub(/\D/, '')
-    return '00-001' if pc.length != 5
+  def format_postcode(postcode)
+    postcode = postcode.to_s.gsub(/\D/, '')
+    return '00-001' if postcode.length != 5
 
-    "#{pc[0..1]}-#{pc[2..4]}"
+    "#{postcode[0..1]}-#{postcode[2..4]}"
   end
 
   def set_acceptance_timestamps

@@ -42,9 +42,10 @@
 #  fk_rails_...  (user_id => users.id)
 #
 class DispensarySerializer < ActiveModel::Serializer
-  attributes :id, :title, :description, :estimated_price, :status, :query_data, :verification_id, :created_at, :image_urls,
-             :external_product_id, :platform_product_id, :category_id, :reasoning,
-             :city, :categories, :latitude, :longitude, :phone, :email, :website, :hours, :rating
+  attributes :id, :title, :description, :estimated_price, :status, :query_data,
+             :verification_id, :created_at, :image_urls, :external_product_id,
+             :platform_product_id, :category_id, :reasoning, :city, :categories,
+             :latitude, :longitude, :phone, :email, :website, :hours, :rating
 
   def reasoning
     object.reasoning if scope&.super_admin?

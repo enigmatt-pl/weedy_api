@@ -75,11 +75,9 @@ class SearchResultsBuilder
              else
                # Default: relevance — prioritise title match, then rating
                if query.present?
-                 scope.order(
-                   Arel.sql("CASE WHEN title ILIKE #{ActiveRecord::Base.connection.quote("%#{query}%")} THEN 0 ELSE 1 END"),
-                   rating: :desc,
-                   created_at: :desc
-                 )
+                 quoted = ActiveRecord::Base.connection.quote("%#{query}%")
+                 sql = "CASE WHEN title ILIKE #{quoted} THEN 0 ELSE 1 END"
+                 scope.order(Arel.sql(sql), rating: :desc, created_at: :desc)
                else
                  scope.order(rating: :desc, created_at: :desc)
                end

@@ -11,44 +11,56 @@ class GeoIpLookupService
   end
 
   def lookup
-    return { country: 'Unknown', country_code: '??' } if @ip.blank?
+    return default_response if @ip.blank?
 
-    # 1. Try to get from local database cache first to save API credits
+    cached_response || fetch_from_api
+  end
+
+  private
+
+  def cached_response
     cached = PageView.where(ip_address: @ip)
                      .where.not(country: nil)
                      .select(:country, :country_code)
                      .first
 
-    if cached
-      return {
-        country: cached.country,
-        country_code: cached.country_code
-      }
-    end
+    return unless cached
 
-    # 2. If not found, fetch from external API
-    return { country: 'Unknown', country_code: '??' } if @api_key.blank?
+    {
+      country: cached.country,
+      country_code: cached.country_code
+    }
+  end
+
+  def fetch_from_api
+    return default_response if @api_key.blank?
 
     begin
-      uri = URI("https://api.ipgeolocation.io/ipgeo?apiKey=#{@api_key}&ip=#{@ip}")
-
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.open_timeout = 2
-      http.read_timeout = 2
-
-      response = http.get(uri.request_uri)
-      return { country: 'Unknown', country_code: '??' } unless response.is_a?(Net::HTTPSuccess)
-
-      geo_data = JSON.parse(response.body)
-
+      geo_data = fetch_external_data
       {
         country: geo_data['country_name'] || 'Unknown',
         country_code: geo_data['country_code2'] || '??'
       }
     rescue StandardError => e
       Rails.logger.error "GeoIP Service Failure: #{e.message}"
-      { country: 'Unknown', country_code: '??' }
+      default_response
     end
+  end
+
+  def fetch_external_data
+    uri = URI("https://api.ipgeolocation.io/ipgeo?apiKey=#{@api_key}&ip=#{@ip}")
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.open_timeout = 2
+    http.read_timeout = 2
+
+    response = http.get(uri.request_uri)
+    return {} unless response.is_a?(Net::HTTPSuccess)
+
+    JSON.parse(response.body)
+  end
+
+  def default_response
+    { country: 'Unknown', country_code: '??' }
   end
 end

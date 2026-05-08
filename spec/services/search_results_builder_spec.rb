@@ -79,7 +79,7 @@ RSpec.describe SearchResultsBuilder, type: :service do
       end
     end
 
-    context 'ordering' do
+    context 'with ordering' do
       it 'orders by rating_desc' do
         builder = described_class.new(params: { order: 'rating_desc' })
         result = builder.fetch
@@ -88,7 +88,7 @@ RSpec.describe SearchResultsBuilder, type: :service do
       end
     end
 
-    context 'pagination' do
+    context 'with pagination' do
       it 'returns pagination metadata' do
         builder = described_class.new(params: { per_page: 1 })
         result = builder.fetch
