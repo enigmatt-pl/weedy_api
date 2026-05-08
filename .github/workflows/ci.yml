@@ -1,0 +1,57 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: weedy_api_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4.4'
+          bundler-cache: true
+
+      - name: Run Bundle Audit
+        run: bundle exec bundle-audit update && bundle exec bundle-audit
+
+      - name: Run RuboCop
+        run: bundle exec rubocop
+
+      - name: Set up database
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:password@localhost:5432/weedy_api_test
+        run: |
+          bundle exec rails db:create db:schema:load
+
+      - name: Run RSpec
+        env:
+          RAILS_ENV: test
+          DATABASE_URL: postgres://postgres:password@localhost:5432/weedy_api_test
+          ALLEGRO_CLIENT_ID: test
+          ALLEGRO_CLIENT_SECRET: test
+          ALLEGRO_REDIRECT_URI: http://localhost:3001/callback
+        run: |
+          bundle exec rspec
