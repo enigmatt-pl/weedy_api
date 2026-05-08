@@ -3,7 +3,7 @@ module Api
     class DispensariesController < ApplicationController
       before_action :authenticate_user!, except: [:show]
       before_action :set_dispensary, only: [:show]
-      before_action :set_owned_dispensary, only: [:update, :destroy, :publish]
+      before_action :set_owned_dispensary, only: [:update, :destroy, :publish, :unpublish]
 
       # Admin panel: returns the current user's own dispensaries.
       # Public search is handled by SearchesController.
@@ -66,6 +66,17 @@ module Api
           }, status: :ok
         else
           render json: { error: 'Nie udało się opublikować punktu' }, status: :unprocessable_content
+        end
+      end
+
+      def unpublish
+        if @dispensary.draft!
+          render json: { 
+            message: 'Publikacja została cofnięta.', 
+            status: @dispensary.status 
+          }, status: :ok
+        else
+          render json: { error: 'Nie udało się cofnąć publikacji' }, status: :unprocessable_content
         end
       end
 

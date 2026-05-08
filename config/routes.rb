@@ -116,6 +116,7 @@ Rails.application.routes.draw do
       resources :dispensaries, only: [:index, :show, :create, :update, :destroy] do
         member do
           post :publish
+          post :unpublish
           post :update # Fallback for multipart updates using POST
         end
       end
