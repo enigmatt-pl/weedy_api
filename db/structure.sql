@@ -1,8 +1,3 @@
-\restrict w2T0I1cWg8dNM3EVqZazBatMeC2E7BxzH3qwDGPae3enuoRsh4pXS13WBT1bqfW
-
--- Dumped from database version 14.22 (Homebrew)
--- Dumped by pg_dump version 14.22 (Homebrew)
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -214,7 +209,7 @@ CREATE TABLE public.page_views (
     prefers_reduced_motion boolean,
     prefers_high_contrast boolean,
     prefers_forced_colors boolean,
-    is_bot boolean,
+    is_bot boolean DEFAULT false,
     is_in_app_browser boolean,
     pdf_viewer_enabled boolean,
     save_data boolean,
@@ -228,7 +223,8 @@ CREATE TABLE public.page_views (
     scroll_milestones character varying,
     time_on_page_sec integer,
     click_count integer,
-    exit_intent boolean
+    exit_intent boolean,
+    source character varying DEFAULT 'js'::character varying
 );
 
 
@@ -455,6 +451,27 @@ CREATE INDEX index_page_views_on_ip_address ON public.page_views USING btree (ip
 
 
 --
+-- Name: index_page_views_on_is_bot; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_page_views_on_is_bot ON public.page_views USING btree (is_bot);
+
+
+--
+-- Name: index_page_views_on_source; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_page_views_on_source ON public.page_views USING btree (source);
+
+
+--
+-- Name: index_page_views_on_visitor_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_page_views_on_visitor_id ON public.page_views USING btree (visitor_id);
+
+
+--
 -- Name: index_searches_on_city; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -540,11 +557,10 @@ ALTER TABLE ONLY public.allegro_integrations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict w2T0I1cWg8dNM3EVqZazBatMeC2E7BxzH3qwDGPae3enuoRsh4pXS13WBT1bqfW
-
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260513103946'),
 ('20260507121000'),
 ('20260422155512'),
 ('20260422142905'),

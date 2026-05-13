@@ -42,6 +42,7 @@
 #                       api_v1_admin_users GET    /api/v1/admin/users(.:format)                                                                     api/v1/admin/users#index
 #                        api_v1_admin_user DELETE /api/v1/admin/users/:id(.:format)                                                                 api/v1/admin/users#destroy
 #                publish_api_v1_dispensary POST   /api/v1/dispensaries/:id/publish(.:format)                                                        api/v1/dispensaries#publish
+#              unpublish_api_v1_dispensary POST   /api/v1/dispensaries/:id/unpublish(.:format)                                                      api/v1/dispensaries#unpublish
 #                        api_v1_dispensary POST   /api/v1/dispensaries/:id(.:format)                                                                api/v1/dispensaries#update
 #                      api_v1_dispensaries GET    /api/v1/dispensaries(.:format)                                                                    api/v1/dispensaries#index
 #                                          POST   /api/v1/dispensaries(.:format)                                                                    api/v1/dispensaries#create

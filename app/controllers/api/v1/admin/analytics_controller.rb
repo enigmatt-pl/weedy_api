@@ -37,8 +37,13 @@ module Api
           render json: {
             total_views: PageView.count,
             unique_paths: PageView.distinct.count(:path),
+            unique_visitors: PageView.distinct.count(:visitor_id),
+            unique_ips: PageView.distinct.count(:ip_address),
             views_today: PageView.where(created_at: Time.zone.now.beginning_of_day..).count,
             views_this_week: PageView.where(created_at: 1.week.ago..).count,
+            bots_today: PageView.where(is_bot: true).where('created_at > ?', 24.hours.ago).count,
+            humans_today: PageView.where(is_bot: [false, nil]).where('created_at > ?', 24.hours.ago).count,
+            source_breakdown: PageView.group(:source).count,
 
             # FOR THE GRAPH (Last 7 Days)
             daily_activity: PageView.where(created_at: 7.days.ago..)

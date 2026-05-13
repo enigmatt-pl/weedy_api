@@ -39,13 +39,33 @@ module Api
           :is_touch_device
         )
 
-        PageView.create!(
-          permitted_data.merge(
-            ip_address: ip,
-            country: geo_data[:country],
-            country_code: geo_data[:country_code]
+        # Implementation Rule: Link 'js' source hits to recent 'server' source hits
+        # to avoid double-counting while keeping rich telemetry.
+        server_hit = PageView.where(
+          source: 'server',
+          ip_address: ip,
+          path: permitted_data[:path]
+        ).where('created_at > ?', 10.seconds.ago).order(created_at: :desc).first
+
+        if server_hit
+          server_hit.update!(
+            permitted_data.merge(
+              country: geo_data[:country],
+              country_code: geo_data[:country_code],
+              source: 'js'
+            )
           )
-        )
+        else
+          PageView.create!(
+            permitted_data.merge(
+              ip_address: ip,
+              country: geo_data[:country],
+              country_code: geo_data[:country_code],
+              source: 'js'
+            )
+          )
+        end
+
         head :created
       rescue StandardError => e
         Rails.logger.error "Analytics Error: #{e.message}"
