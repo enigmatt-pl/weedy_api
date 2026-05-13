@@ -26,7 +26,7 @@
 #  gpu_vendor                :string
 #  hardware_concurrency      :integer
 #  ip_address                :string
-#  is_bot                    :boolean
+#  is_bot                    :boolean          default(FALSE)
 #  is_in_app_browser         :boolean
 #  is_touch_device           :boolean
 #  js_heap_size_mb           :integer
@@ -57,6 +57,7 @@
 #  scroll_depth_pct          :integer
 #  scroll_milestones         :string
 #  session_storage_available :boolean
+#  source                    :string           default("js")
 #  storage_quota_mb          :integer
 #  storage_usage_mb          :integer
 #  time_on_page_sec          :integer
@@ -73,6 +74,9 @@
 # Indexes
 #
 #  index_page_views_on_ip_address  (ip_address)
+#  index_page_views_on_is_bot      (is_bot)
+#  index_page_views_on_source      (source)
+#  index_page_views_on_visitor_id  (visitor_id)
 #
 require 'test_helper'
 

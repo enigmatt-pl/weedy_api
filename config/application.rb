@@ -34,5 +34,8 @@ module WeedyApi
 
     # Enable _method=PUT/PATCH for POST requests (helpful for FormData with multipart)
     config.middleware.use Rack::MethodOverride
+    
+    require_relative "../app/middleware/analytics_tracker"
+    config.middleware.use AnalyticsTracker
   end
 end
